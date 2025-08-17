@@ -25,7 +25,7 @@ def _open_sheet():
     if not spreadsheet_id:
         raise RuntimeError("SPREADSHEET_ID fehlt in .env")
 
-    client = _get_client()
+    client = get_client()
     ss = client.open_by_key(spreadsheet_id)
 
     try:
@@ -76,6 +76,7 @@ def health_check() -> str:
     ws = _open_sheet()
     ok_header = (ws.row_values(1) == HEADER)
     return f"Worksheet: {ws.title} | Header ok: {ok_header}"
+
 
 
 
