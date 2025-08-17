@@ -10,15 +10,13 @@ WORKSHEET_TITLE = "Kundendaten"  # Tab-Name im Spreadsheet
 
 
 def _get_client() -> gspread.Client:
-
-    file_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON_FILE")
+    """
+    Authentifiziert gegen Google:
+    1) bevorzugt GOOGLE_SERVICE_ACCOUNT_JSON (einzeiliges JSON im ENV; z. B. auf Render)
+    2) sonst GOOGLE_SERVICE_ACCOUNT_JSON_FILE (Pfad zur JSON-Datei; z. B. lokal)
+    """
     raw = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
-
-    if file_path:
-        if not os.path.exists(file_path):
-            raise RuntimeError(f"GOOGLE_SERVICE_ACCOUNT_JSON_FILE existiert nicht: {file_path}")
-        creds = Credentials.from_service_account_file(file_path, scopes=SCOPES)
-        return gspread.authorize(creds)
+    file_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON_FILE")
 
     if raw:
         try:
@@ -28,7 +26,13 @@ def _get_client() -> gspread.Client:
         creds = Credentials.from_service_account_info(info, scopes=SCOPES)
         return gspread.authorize(creds)
 
-    raise RuntimeError("Weder GOOGLE_SERVICE_ACCOUNT_JSON_FILE noch GOOGLE_SERVICE_ACCOUNT_JSON gesetzt.")
+    if file_path:
+        if not os.path.exists(file_path):
+            raise RuntimeError(f"GOOGLE_SERVICE_ACCOUNT_JSON_FILE existiert nicht: {file_path}")
+        creds = Credentials.from_service_account_file(file_path, scopes=SCOPES)
+        return gspread.authorize(creds)
+
+    raise RuntimeError("Weder GOOGLE_SERVICE_ACCOUNT_JSON noch GOOGLE_SERVICE_ACCOUNT_JSON_FILE gesetzt.")
 
 
 def _open_sheet():
@@ -88,5 +92,6 @@ def health_check() -> str:
     ws = _open_sheet()
     ok_header = (ws.row_values(1) == HEADER)
     return f"Worksheet: {ws.title} | Header ok: {ok_header}"
+
 
 
