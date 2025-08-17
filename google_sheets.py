@@ -9,30 +9,14 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 WORKSHEET_TITLE = "Kundendaten"  # Tab-Name im Spreadsheet
 
 
-def _get_client() -> gspread.Client:
-    """
-    Authentifiziert gegen Google:
-    1) bevorzugt GOOGLE_SERVICE_ACCOUNT_JSON (einzeiliges JSON im ENV; z. B. auf Render)
-    2) sonst GOOGLE_SERVICE_ACCOUNT_JSON_FILE (Pfad zur JSON-Datei; z. B. lokal)
-    """
-    raw = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
-    file_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON_FILE")
-
-    if raw:
-        try:
-            info = json.loads(raw)
-        except Exception as e:
-            raise RuntimeError(f"GOOGLE_SERVICE_ACCOUNT_JSON ist kein gültiges JSON: {e}")
-        creds = Credentials.from_service_account_info(info, scopes=SCOPES)
-        return gspread.authorize(creds)
-
-    if file_path:
-        if not os.path.exists(file_path):
-            raise RuntimeError(f"GOOGLE_SERVICE_ACCOUNT_JSON_FILE existiert nicht: {file_path}")
-        creds = Credentials.from_service_account_file(file_path, scopes=SCOPES)
-        return gspread.authorize(creds)
-
-    raise RuntimeError("Weder GOOGLE_SERVICE_ACCOUNT_JSON noch GOOGLE_SERVICE_ACCOUNT_JSON_FILE gesetzt.")
+def get_client():
+    raw_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+    if not raw_json:
+        raise RuntimeError("GOOGLE_SERVICE_ACCOUNT_JSON fehlt in Environment Variables!")
+    info = json.loads(raw_json)
+    scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+    creds = Credentials.from_service_account_info(info, scopes=scopes)
+    return gspread.authorize(creds)
 
 
 def _open_sheet():
@@ -92,6 +76,7 @@ def health_check() -> str:
     ws = _open_sheet()
     ok_header = (ws.row_values(1) == HEADER)
     return f"Worksheet: {ws.title} | Header ok: {ok_header}"
+
 
 
 
