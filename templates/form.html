@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card shadow-sm">
+  <div class="card-body p-4">
+    <h2 class="h4 mb-3">Deine Daten</h2>
+
+    <form method="POST" action="/">
+      <div class="row g-3">
+
+        <!-- Name -->
+        <div class="col-md-8">
+          <label class="form-label">Name</label>
+          <input class="form-control" type="text" name="Name" required
+                 value="{{ request.form.get('Name','') }}">
+        </div>
+
+        <!-- Alter -->
+        <div class="col-md-4">
+          <label class="form-label">Alter</label>
+          <input class="form-control" type="number" name="Alter" min="15" max="100" step="1"
+                 value="{{ request.form.get('Alter','') }}">
+        </div>
+
+        <!-- Geschlecht -->
+        <div class="col-md-6">
+          <label class="form-label">Geschlecht</label>
+          {% set g = request.form.get('Geschlecht','') %}
+          <select class="form-select" name="Geschlecht">
+            <option {{ 'selected' if g=='Mann' }}>Mann</option>
+            <option {{ 'selected' if g=='Frau' }}>Frau</option>
+            <option {{ 'selected' if g=='Anderes' }}>Anderes</option>
+          </select>
+        </div>
+
+        <!-- Trainingserfahrung -->
+        <div class="col-md-6">
+          <label class="form-label">Trainingserfahrung</label>
+          {% set te = request.form.get('Trainingserfahrung','') %}
+          <select class="form-select" name="Trainingserfahrung">
+            <option {{ 'selected' if te=='Anfänger' }}>Anfänger</option>
+            <option {{ 'selected' if te=='Fortgeschritten' }}>Fortgeschritten</option>
+            <option {{ 'selected' if te=='Profi' }}>Profi</option>
+          </select>
+        </div>
+
+        <!-- Trainingsschwerpunkt (Checkbox-Gruppe) -->
+        <div class="col-12">
+          <label class="form-label">Trainingsschwerpunkt <span class="text-muted">(Mehrfachauswahl möglich)</span></label>
+          {% set ts = request.form.getlist('Trainingsschwerpunkt') %}
+          <div class="row row-cols-1 row-cols-sm-2 g-2">
+
+            {% for val,label in [
+              ('Kraftaufbau','Kraftaufbau'),
+              ('Ausdauer verbessern','Ausdauer verbessern'),
+              ('Beweglichkeit erhöhen','Beweglichkeit erhöhen'),
+              ('Gewicht reduzieren','Gewicht reduzieren'),
+              ('Muskeldefinition','Muskeldefinition'),
+              ('Schmerzfreiheit / Reha','Schmerzfreiheit / Reha'),
+              ('Allgemeine Fitness erhalten oder erhöhen','Allgemeine Fitness erhalten oder erhöhen')
+            ] %}
+              <div class="col">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="ts_{{ loop.index }}"
+                         name="Trainingsschwerpunkt" value="{{ val }}"
+                         {{ 'checked' if val in ts }}>
+                  <label class="form-check-label" for="ts_{{ loop.index }}">{{ label }}</label>
+                </div>
+              </div>
+            {% endfor %}
+
+          </div>
+        </div>
+
+        <!-- Motivation -->
+        <div class="col-12">
+          <label class="form-label">Motivation</label>
+          <input class="form-control" type="text" name="Motivation"
+                 placeholder="Warum starte ich JETZT? (gesünder leben, mehr Energie, Schmerzen vermeiden)"
+                 value="{{ request.form.get('Motivation','') }}">
+        </div>
+
+        <!-- Bisherige Sportarten -->
+        <div class="col-12">
+          <label class="form-label">Bisherige Sportarten</label>
+          <input class="form-control" type="text" name="Bisherige Sportarten"
+                 placeholder="z. B. Fußball, Laufen, Krafttraining"
+                 value="{{ request.form.get('Bisherige Sportarten','') }}">
+        </div>
+
+        <!-- Verletzungen -->
+        <div class="col-12">
+          <label class="form-label">Verletzungen/Krankheiten</label>
+          <input class="form-control" type="text" name="Verletzungen"
+                 placeholder="z. B. Rückenprobleme, Knie-OP, Asthma"
+                 value="{{ request.form.get('Verletzungen','') }}">
+        </div>
+
+        <!-- Beruf -->
+        <div class="col-md-6">
+          <label class="form-label">Beruf</label>
+          <input class="form-control" type="text" name="Beruf"
+                 placeholder="z. B. Bürojob, Handwerk, Schichtarbeit"
+                 value="{{ request.form.get('Beruf','') }}">
+        </div>
+
+        <!-- Schlaf -->
+        <div class="col-md-6">
+          <label class="form-label">Schlaf (Stunden)</label>
+          <input class="form-control" type="number" name="Schlaf" min="0" max="24" step="0.5"
+                 value="{{ request.form.get('Schlaf','') }}">
+        </div>
+
+        <!-- Ernährung -->
+        <div class="col-md-6">
+          <label class="form-label">Ernährung</label>
+          {% set ern = request.form.get('Ernährung','') %}
+          <select class="form-select" name="Ernährung">
+            <option {{ 'selected' if ern=='Normal' }}>Normal</option>
+            <option {{ 'selected' if ern=='Vegetarisch' }}>Vegetarisch</option>
+            <option {{ 'selected' if ern=='Vegan' }}>Vegan</option>
+          </select>
+        </div>
+
+        <!-- Besonderes -->
+        <div class="col-md-6">
+          <label class="form-label">Besonderes</label>
+          <input class="form-control" type="text" name="Besonderes"
+                 placeholder="z. B. Laktoseintoleranz, Allergien, vegetarisch"
+                 value="{{ request.form.get('Besonderes','') }}">
+        </div>
+
+        <!-- Ziele -->
+        <div class="col-12">
+          <label class="form-label">Ziele</label>
+          <input class="form-control" type="text" name="Ziele"
+                 placeholder="z. B. 10 kg abnehmen, Marathon, Muskeln definieren"
+                 value="{{ request.form.get('Ziele','') }}">
+        </div>
+
+        <!-- Trainingstage/Woche -->
+        <div class="col-md-6">
+          <label class="form-label">Trainingstage/Woche</label>
+          <input class="form-control" type="number" name="Trainingstage/Woche" min="1" max="7" step="1"
+                 value="{{ request.form.get('Trainingstage/Woche','') }}">
+        </div>
+
+        <!-- Erwartung an Trainer -->
+        <div class="col-12">
+          <label class="form-label">Erwartung an Trainer</label>
+          <input class="form-control" type="text" name="Erwartung an Trainer"
+                 placeholder="z. B. Motivation, klare Pläne, Technik verbessern"
+                 value="{{ request.form.get('Erwartung an Trainer','') }}">
+        </div>
+
+        <!-- Fitnessstudio-Zugang -->
+        <div class="col-md-6">
+          <label class="form-label">Fitnessstudio-Zugang</label>
+          {% set fz = request.form.get('Fitnessstudio-Zugang','') %}
+          <select class="form-select" name="Fitnessstudio-Zugang">
+            <option {{ 'selected' if fz=='Ja' }}>Ja</option>
+            <option {{ 'selected' if fz=='Nein' }}>Nein</option>
+          </select>
+        </div>
+
+        <!-- Heim-Equipment -->
+        <div class="col-md-6">
+          <label class="form-label">Heim-Equipment</label>
+          {% set he = request.form.get('Heim-Equipment','') %}
+          <select class="form-select" name="Heim-Equipment">
+            <option {{ 'selected' if he=='Ja' }}>Ja</option>
+            <option {{ 'selected' if he=='Nein' }}>Nein</option>
+          </select>
+        </div>
+
+        <!-- Email -->
+        <div class="col-12">
+          <label class="form-label">Email</label>
+          <input class="form-control" type="email" name="Email"
+                 value="{{ request.form.get('Email','') }}">
+        </div>
+
+        <!-- Submit -->
+        <div class="col-12">
+          <button class="btn btn-primary mt-2" type="submit">Speichern</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

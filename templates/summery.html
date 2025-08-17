@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Zusammenfassung</h2>
+  <ul>
+    {% for key, value in data.items() %}
+      <li><strong>{{ key }}:</strong> {{ value }}</li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('kundenformular') }}">Zurück zum Formular</a>
+{% endblock %}
